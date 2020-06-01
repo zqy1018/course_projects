@@ -8,8 +8,8 @@ inline ui next_integer(ui x){
     x ^= x << 5;
     return x;
 }
-unsigned int s[500005], b[500005], lst;
-int l[500005], r[500005], n;
+unsigned int s[1000005], b[1000005], lst;
+int l[1000005], r[1000005], n;
 
 void percolate_down(int x){
     unsigned int tmp = s[x];
@@ -74,8 +74,9 @@ void heapsort(){
     b[1] = s[1];
     // output_test(n);
 }
-int main(){
-    scanf("%d%u", &n, &lst);
+int main(int argc, char **argv){
+    sscanf(argv[1], "%d", &n);
+    sscanf(argv[2], "%u", &lst);
     for (int i = 1; i <= n; ++i){
 		s[i] = next_integer(lst), lst = s[i];
         int lch = (i << 1), rch = (i << 1 | 1);
@@ -89,8 +90,7 @@ int main(){
     heapsort();
 
     auto end = chrono::steady_clock::now();
-    cout << "Elapsed time in microseconds : ";
-	cout << chrono::duration_cast<chrono::microseconds>(end - start).count();
+	cout << chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 	cout << endl;
     return 0;
 }
