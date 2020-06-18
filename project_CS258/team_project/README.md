@@ -2,6 +2,8 @@
 
 Team project for CS258. 
 
+Joint work with [@Jiang-yan-wei](https://github.com/Jiang-yan-wei) and [@czslxk](https://github.com/czslxk).
+
 Experiment environment: 
 
 - CPU: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
