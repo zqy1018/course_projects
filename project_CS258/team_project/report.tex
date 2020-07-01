@@ -1,0 +1,528 @@
+\documentclass[12pt]{extarticle}
+%Some packages I commonly use.
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{array}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{pythonhighlight}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage[boxed,linesnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage[utf8]{inputenc}
+\usepackage[top=1 in,bottom=1in, left=1 in, right=1 in]{geometry}
+
+\usepackage[pdfstartview=FitH,
+CJKbookmarks=true,
+bookmarksnumbered=true,
+bookmarksopen=true,
+colorlinks,
+pdfborder=001,
+linkcolor=blue,
+anchorcolor=blue,
+citecolor=blue,
+]{hyperref}
+\hypersetup{hidelinks}
+
+%A bunch of definitions that make my life easier
+\newcommand{\matlab}{{\sc Matlab} }
+\newcommand{\cvec}[1]{{\mathbf #1}}
+\newcommand{\rvec}[1]{\vec{\mathbf #1}}
+\newcommand{\ihat}{\hat{\textbf{\i}}}
+\newcommand{\jhat}{\hat{\textbf{\j}}}
+\newcommand{\khat}{\hat{\textbf{k}}}
+\newcommand{\minor}{{\rm minor}}
+\newcommand{\trace}{{\rm trace}}
+\newcommand{\spn}{{\rm Span}}
+\newcommand{\rem}{{\rm rem}}
+\newcommand{\ran}{{\rm range}}
+\newcommand{\range}{{\rm range}}
+\newcommand{\mdiv}{{\rm div}}
+\newcommand{\proj}{{\rm proj}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\<}{\langle}
+\renewcommand{\>}{\rangle}
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\attn}[1]{\textbf{#1}}
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{remark}{Remark}
+\newtheorem*{corollary}{Corollary}
+\newtheorem*{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem*{note}{Note}
+\newtheorem{exercise}{Exercise}
+\newtheorem{problem}{Problem}
+\newcommand{\bproof}{\bigskip {\bf Proof. }}
+\newcommand{\eproof}{\hfill\qedsymbol}
+\newcommand{\Disp}{\displaystyle}
+\newcommand{\qe}{\hfill\(\bigtriangledown\)}
+\newcommand{\udl}{\underline{ }}
+\setlength{\columnseprule}{1 pt}
+
+\newfontfamily\con[Scale=0.85]{Consolas}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+	language=python,
+	basicstyle={\small\ttfamily},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	alsoletter={1234567890},
+	otherkeywords={\ , \}, \{},
+	keywordstyle=\color{blue},
+	emph={access,and,break,class,continue,def,del,elif ,else,%
+		except,exec,finally,for,from,global,if,import,in,i s,%
+		lambda,not,or,pass,print,raise,return,try,while},
+	emphstyle=\color{orange}\bfseries,
+	emph={[2]True, False, None, self},
+	emphstyle=[2]\color{green},
+	emph={[3]from, import, as},
+	emphstyle=[3]\color{blue},
+	upquote=true,
+	morecomment=[s]{"""}{"""},
+	commentstyle=\color{gray}\slshape,
+	emph={[4]1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+	emphstyle=[4]\color{blue},
+	literate=*{:}{{\textcolor{blue}:}}{1}%
+	{=}{{\textcolor{blue}=}}{1}%
+	{-}{{\textcolor{blue}-}}{1}%
+	{+}{{\textcolor{blue}+}}{1}%
+	{*}{{\textcolor{blue}*}}{1}%
+	{!}{{\textcolor{blue}!}}{1}%
+	{(}{{\textcolor{blue}(}}{1}%
+	{)}{{\textcolor{blue})}}{1}%
+	{[}{{\textcolor{blue}[}}{1}%
+	{]}{{\textcolor{blue}]}}{1}%
+	{<}{{\textcolor{blue}<}}{1}%
+	{>}{{\textcolor{blue}>}}{1},%
+	framexleftmargin=1mm, framextopmargin=1mm, frame=shadowbox, rulesepcolor=\color{black},
+}
+
+\linespread{1.5}
+% -----------------------------------------------------------------------------
+
+
+\title{Improving Sorting Algorithms via Information Theoretic Analysis}
+\author{Qiyuan Zhao 518030910289\\ Yanwei Jiang 518030910274\\ Xuekai Liu 518030910309}
+\date{Shanghai Jiao Tong University}
+
+\bibliographystyle{plain}
+
+\begin{document}
+	
+\maketitle
+
+\begin{abstract}
+	Entropy describes the degree of confusion of a set, while information entropy represents the amount of information that can be obtained in each step. As an ancient and important problem, the essence of sorting problem is to realize a process from disorder to order. Therefore, the use of information theory can provide a feasible reference for the improvement of sorting problem. In this paper, the original heapsort algorithm is improved, and proposes two fast heapsort algorithms. The experimental results show that the fast heapsort (rearranged) algorithm has excellent performance and strong stability in the case of large amount of data. At the same time, this paper also proposes an optimization idea for the fast sorting algorithm.
+\end{abstract}
+
+\textbf{Keywords: } information entropy, sorting algorithms, heapsort, quicksort.
+
+\newpage
+\tableofcontents
+
+\section{Introduction}
+
+\subsection{Invention and Importance of Sorting Algorithms}
+
+In our daily life, sorting is a frequently-used method. Such as sorting students by their grades, sorting goods of a supermarket by price.
+
+Similarly, in science occasion, we usually analyse datasets that contain millions of independent items. In most cases, they need to be arranged in a certain order, and it is a challenge to sort so many data. So, many sorting algorithms are invented. The \textit{speed} of sorting algorithm is very important. An outstanding algorithm can perform hundreds of times better than a terrible one. So when dealing with millions of data, an algorithm's speed is vital to help us to analyse, or for another program to process them. Then we would like to introduce some typical algorithms.
+
+\subsection{Typical Algorithms and Their Speed}
+
+When sorting a small amount of items in life, we usually:
+\begin{enumerate}
+	\item Select two items, and sort them.
+	\item Then select a new item, compare it with sorted ones.
+	\item Place it in its position that it should be.
+	\item Repeat this process until all is sorted.
+\end{enumerate}
+
+This naive method is called \textit{insertion sort}. Managing cards in a card game is an example for insertion sort.
+
+Insertion sort is a natural but not a good algorithm. In some best cases, we need to compare $n$ times and swap $0$ times. But that is fairly rare. In most cases, we need to compare and swap less than $n^2$ times. The time complexity is $O(n^2)$.
+
+This is just an introduction. There are still many typical algorithms, such as \textit{bubble sort}, \textit{shell sort} and \textit{selection sort}. But they can not cope with large array. We have three frequently-used excellent algorithms: \textit{quicksort}, \textit{merge sort} and \textit{heapsort}. The time complexity of them is $\Omega(n \log n)$. They are fast enough to sort a large data set (more than 1 billion on normal PC and even larger on a better computer). And we will focus on quicksort and heapsort. They are what we are interested in. 
+
+\subsection{Purpose of This Report}
+
+After learning \textit{Information Theory}, we re-researched the sorting algorithms we've learned in \textit{Data Structure} last semester by applying information entropy. 
+
+Our purpose is: 
+\begin{enumerate}
+	\item Proved that $\Omega(n \log n)$ is the lower bound of sorting algorithms.
+	\item Improve quicksort and heapsort based on some existing work.
+	\item Prove or explain their advantages and compare them with the original algorithms.
+\end{enumerate}
+
+\section{Literature review}
+
+As an ancient and very important problem, sorting problem has been studied for a long time. Kislitsyn proved in 1968 \cite{kislitsyn1968a} that any comparison-based algorithm requires $\log(e(P))$ comparisons in the worst case, where $e(P)$ is the number of linear extensions of P. This is called the ``information theory lower bound (ITLB)'', which we will also talk about later. But almost 5 years later, Fredman \cite{fredman1976how} showed that sorting can be achieved with $\log(e(P))+2n$ comparisons, where $n=|P|$. So it is clear that the ITLB is nearly sharp unless $e(P)$ is quite small. But both of their work only state the ideal lower bound. No one gives a feasible implementation method.
+
+With the emergence of a variety of sorting algorithms, people began to think about how to make the time efficiency of the algorithm close to the theoretical value. Paul Hsieh \cite{paul1} did a research on the running time of heapsort and quicksort in different compiling environments, which showed that the total CPU tally is different from the number of comparisons made. Then David MacKay \cite{mackay1} thought the reason of that heapsort is not as fast as quicksort in general is that it makes comparisons whose outcomes do not have equal prior probability. He explained this based on the idea of expected information content. Recently, a Chinese searcher called Guoqing Qi \cite{guo2002application} analyzed the efficiency of the insertion sort and merging sort by means of entropy, and pointed out that when the length of the series is larger than $4$, any sorting algorithm based-on direct comparison requires more comparison than the lower bound. But as for heapsort and quicksort, almost none of them gave a reasonable and effective improvement method until now.
+	
+\section{Preliminaries}
+
+In this section, we will model our problem. We will also give necessary definitions and lemmas. 
+
+\subsection{Basic Definitions}
+
+For convenience, we will focus on the following \textit{sorting problem}:
+
+\begin{algorithm}
+	\KwIn{a sequence of $n$ \textit{distinct} numbers $a_1, a_2, \cdots, a_n$}
+	\KwOut{a permutation (reordering) $b_1, b_2, \cdots, b_n$ of the input sequence where $b_1 < b_2 < \cdots < b_n$}
+	\label{algo:problem1}
+\end{algorithm}
+
+Since the output that we want is the permutation of the input sequence, we can put it another way:
+
+\begin{algorithm}
+	\KwIn{a sequence of $n$ \textit{distinct} numbers $a_1, a_2, \cdots, a_n$}
+	\KwOut{a permutation of $\left\lbrace 1, 2, \cdots, n\right\rbrace$, denoted as $\left\lbrace i_1, i_2, \cdots, i_n\right\rbrace$, such that $a_{i_1} < a_{i_2} < \cdots < a_{i_n}$}
+	\label{algo:problem2}
+\end{algorithm}
+
+We will use this definition in proving the information theoretic lower bound.
+
+And the sorting algorithms we will discuss are \textit{comparison-based}. That is, the sorted order they determine is based only on comparisons between the input numbers. We do a \textit{comparison} between $a_i$ and $a_j$ by querying whether $a_i < a_j$ and then getting the answer.
+
+\subsection{The Information Theoretic Lower Bound}
+
+Here, we will prove the information theoretic lower bound of comparison-based sorting algorithms. 
+
+We use $X^n$ to denote the result sequence $\left\lbrace i_1, i_2, \cdots, i_n\right\rbrace$. Obviously the size of its sample space is $|\Omega| = n!$.  
+
+Denote the (discrete) information entropy of $X^n$ as $H(X^n)$. Then we have the following lemma, which shows the upper bound of $H(X^n)$.
+
+\begin{lemma}
+	$H(X^n) \le \log (n!)$.
+\end{lemma}
+\begin{proof}
+	The size of the sample space of $X^n$ is $|\Omega| = n!$. Then it follows the conclusion in information theory straightforward.
+\end{proof}
+
+\begin{note}
+	We will basically focus on the cases where $X^n$ obeys a \textit{uniform distribution}. That is, for any possible permutation $p$, $\operatorname{Pr} (X^n = p) = \frac{1}{n!}$. 
+\end{note}
+
+If we sorted the sequence under some information, we would uniquely determine the value of $X^n$, which implies that its entropy vanishes.
+
+\begin{lemma}
+	Let the information needed to sort the input sequence be $Y$. Then $H(X^n |Y) = 0$.
+\end{lemma}
+\begin{proof}
+	Given $Y$, we can uniquely determine $X^n$. So $\exists !p, \operatorname{Pr} (X^n = p | Y) = 1$. Thus $H(X^n |Y) = 0$.
+\end{proof}
+
+Intuitively, in one comparison, the information that it contains is at most $1$ bit, as the answer can be represented with $1$ bit ($0$ for ``no'' and $0$ for ``yes''). So it seems reasonable to state that we need at least $\log_2 (n!)$ comparisons. But actually, we can prove it in a formal way. 
+
+\begin{lemma}
+	Let $Y$ be the information that we have obtained in previous comparisons. Then denote the answer of whether $a_i < a_j$ be $\operatorname{cmp}(a_i, a_j)$, where $1 \le i \le n, 1 \le j \le n$. Then 
+	$$
+	H(X^n | Y) - 1\le H(X^n | Y, \operatorname{cmp}(a_i, a_j)) \le H(X^n|Y)
+	$$
+\end{lemma}
+\begin{proof}
+	Since conditions reduce entropy, $H(X^n | Y, \operatorname{cmp}(a_i, a_j)) \le H(X^n|Y)$.
+	
+	For another inequality, let $\operatorname{Pr}(a_i < a_j) = p$. Let the number of possible permutations under the condition $Y$ be $m$. Then there are $pm$ permutations where $i$ is front of $j$ and $(1-p)m$ permutations where $i$ is behind $j$.
+	
+	Since $X^n$ obeys a uniform distribution, we have
+	$$
+	\begin{aligned}
+	H(X^n | Y, \operatorname{cmp}(a_i, a_j)) &= pH(X^n | Y, a_i < a_j) + (1-p)H(X^n | Y, a_i > a_j) \\
+	&= p \log_2 (pm) + (1-p)\log_2[(1 -p)m] \\
+	&= \log_2 m - H(p)
+	\end{aligned}
+	$$
+	
+	Since $H(p) \le 1$ and $H(X^n | Y) = \log_2 m$, we have $H(X^n | Y) - 1\le H(X^n | Y, \operatorname{cmp}(a_i, a_j))$.
+\end{proof}
+
+Combining the three lemmas above, we have the following theorem.
+
+\begin{theorem}
+	(The information theoretic lower bound) The numbers of comparisons that are needed to sort a sequence with length $n$ is at least $\log_2 (n!)$.
+\end{theorem} 
+
+\begin{note}
+	Some textbooks also use the \textit{decision tree model} to prove this lower bound. (Ref: Data Structure and Algorithm Analysis, 4ed)
+\end{note}
+
+% TODO：这里做一个引用
+
+With this lower bound, we can prove the asymptotic time complexity of an optimal comparison-based sorting algorithm. It only requires some basic algebraic transformations.
+
+\begin{theorem}
+	The asymptotic time complexity of an optimal comparison-based sorting algorithm is $\Omega(n \log n)$.
+\end{theorem} 
+\begin{proof}
+	When $n$ is sufficiently large, 
+	$$
+	\begin{aligned}
+	\log_2(n!) &= \sum_{i=1}^{n} \log_2 i \\
+	&\ge \sum_{i=\lceil \frac{n}{2}\rceil}^{n} \log_2 i \\
+	& \ge \lceil \frac{n}{2}\rceil \log_2 \lceil \frac{n}{2}\rceil \\
+	& \ge \frac{n}{2} \log_2 \frac{n}{2} \\
+	&= \frac{n}{2} \log_2 n - \frac{n}{2} 
+	\end{aligned}
+	$$
+	
+	So $\log_2(n!) = \Omega(n \log n)$.
+\end{proof}
+
+
+\section{Improving Heapsort}
+
+In this section, we implement an improvement proposed by MacKay and try to find out its advantages in a information-theoretic view.
+
+\subsection{The Original Algorithm}
+
+Heapsort can be seen as an improved selection sort. It uses an auxiliary data structure, called \textit{heap}, to extract the minimum in the unsorted part efficiently. 
+
+A heap is essentially an array object, but we can view it as an almost complete binary tree, by taking the left and right child of element indexed $i$ as elements indexed $2i$ and $2i+1$ respectively.
+
+For a max(min)-heap, the \textit{heap property} holds: for any element in the heap, it is larger(smaller) than its children. Thus the maximum(minimum) is at the root.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\linewidth]{pic1.jpg}
+	\caption{A max-heap viewed as (a) a binary tree and (b) an array. Picture credit: An Introduction to Algorithms, 3ed.}
+	\label{plot1}
+\end{figure}
+
+Heapsort consists of three main procedures: building the input sequence into a heap, popping out the root of the heap, and maintaining the heap property. 
+
+Here, we will make improvements based on Williams' method for maintaining. In Williams' method, once the root is popped out, the element with the largest index will be moved to the root, and then the maintaining procedure starts. The whole process can be described by the pseudocode below.
+
+\begin{algorithm}[H]
+	\caption{Heapsort (Williams' method)}
+	\KwIn{a sequence $A$}
+	\KwResult{sorted sequence $A$ (in-place sort)}
+	\label{algo:heapsort_original}
+	\LinesNumbered
+	{\con build\udl max\udl heap($A$)} \\
+	\For{$i= \operatorname{len}(A) \textnormal{ }\mathbf{downto}\textnormal{ } 2$}	{
+		{\con swap($A[1]$, $A[i]$)} \\
+		{\con $A$.heap\udl size := $A$.heap\udl size - 1} \\
+		{\con percolate\udl down($A$, 1)}
+	}
+\end{algorithm}
+
+For more details, one can refer to the papers where the algorithm is proposed  or some algorithm books like \cite{cormen1990introduction}.
+
+\subsection{Analysis and Improvements}
+
+The algorithm above can achieve the information theoretic lower bound asymptotically, but the maintaining method is somehow weird. Swapping the largest-indexed element with the root seems to disrupt the orderliness. 
+
+So to make it more natural, MacKay proposed an improved version of heapsort, called ``fast heapsort''. His idea can be written as follows.
+
+\begin{algorithm}[H]
+	\caption{The {\con maintain} Function}
+	\KwIn{a heap $A$ and a hole indexed at $id$}
+	\KwOut{the position $id$ where maintainment finishes}
+	\KwResult{a maintained heap $A$ (in-place maintainment)}
+	\label{algo:heapsort_improved_maintain}
+	\LinesNumbered
+	\eIf{$id \textnormal{ is a leaf node}$}{
+		delete $id$ from the heap \\
+		\Return{$id$}
+	}{
+		\eIf{$id \textnormal{ has one child}$}{
+			$\textnormal{let } ch \textnormal{ be the child}$
+		}
+		{
+			$\textnormal{compare the two sub-heap roots directly below } id$ \\
+			$\textnormal{denote the larger one as } A[ch]$ \\
+		}
+		$A[id] := A[ch]$ \\
+		$\textnormal{creating a hole at } ch$ \\
+		{\con maintain($A$, $ch$)}
+	}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Fast Heapsort}
+	\KwIn{a sequence $A$}
+	\KwOut{a sorted sequence $B$, also a permutation of $A$}
+	\label{algo:heapsort_improved}
+	\LinesNumbered
+	{\con build\udl max\udl heap($A$)} \\
+	\For{$i= \operatorname{len}(A) \textnormal{ }\mathbf{downto}\textnormal{ } 1$}	{
+		{\con $B[i] := A[1]$} \\
+		$\textnormal{remove } A[1] \textnormal{, resulting in a hole}$ \\
+		{\con maintain($A$, 1)}
+	}
+\end{algorithm}
+
+Here is an example that fast heapsort beats the original one in the sense of numbers of comparisons made. And we use it to demonstrate how fast heapsort works.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\linewidth]{pic2.jpg}
+	\caption{A example. Created with the graph editor at {\con csacademy.com}.}
+	\label{plot2}
+\end{figure}
+
+Although he did not make a more specific explanation for this method, we may understand it with the famous principle: \textit{chaos increases entropy}. An similar example is that shuffling cards will increase the entropy of the order of cards, because it adds chaos into the order. 
+
+As we can see, in fast heapsort, the heap may not be an almost complete binary tree. To fix this, we can introduce a sifting-up operation (used in inserting an element into a heap) at the end of one iteration. This rearranged version is described below.
+
+\begin{algorithm}[H]
+	\caption{Fast Heapsort (Rearranged)}
+	\KwIn{a sequence $A$}
+	\KwResult{a sorted sequence $A$ (in-place)}
+	\label{algo:heapsort_improved_2}
+	\LinesNumbered
+	{\con build\udl max\udl heap($A$)} \\
+	\For{$i= \operatorname{len}(A) \textnormal{ }\mathbf{downto}\textnormal{ } 2$}	{
+		{\con $tmp := A[1]$} \\
+		$\textnormal{remove } A[1] \textnormal{, resulting in a hole}$ \\
+		$pos :=$ {\con maintain($A$, 1)} \\
+		\If{$pos < i$}{
+			$A[pos] := A[i]$ \\
+			{\con sift\udl up($A$, $pos$)}
+		}
+		$A[i] := tmp$	
+	}
+\end{algorithm}
+
+\subsection{Implementation}
+
+We implemented the original and rearranged fast heapsort with C++. We also implemented the original heapsort with C++. The code is \href{https://github.com/zqy1018/course_projects/tree/master/project_CS258/team_project}{this repository}.
+
+\subsection{Result}
+
+We tested our implementation with random test data. We generate input sequences with a random number generator. The code is \href{https://github.com/zqy1018/course_projects/tree/master/project_CS258/team_project}{this repository}.
+
+The result is shown in the picture as follows.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{pic3.pdf}
+	\caption{The performance of three implementations under normal test-cases.}
+	\label{fig:fig1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{pic4.pdf}
+	\caption{The performance of three implementations under large test-cases.}
+	\label{fig:fig2}
+\end{figure}
+
+\section{Improving Quicksort}
+
+In this section, we will briefly discuss how to improve the quicksort based on some information theoretic analysis.
+
+\subsection{The Original Algorithm}
+
+Quicksort is an in-place algorithm with expected running time $\Theta(n \log n)$. It is quite efficient for most input sequences, despite the fact that it has a worst-case running time of $\Theta(n^2)$.
+
+Quicksort applies the classical divide-and-conquer strategy in sorting. In each recursive case, a special element called \textit{pivot} is chosen, and then the sequence is partitioned into three parts: the pivot, the sub-sequence on its left where the elements are all smaller than it, and the sub-sequence on its right where the elements are all larger than it. Then the two sub-sequences will be recursively sorted.
+
+The pseudocode of quicksort is described as follows.
+
+\begin{algorithm}[H]
+	\caption{The {\con partition} Function}
+	\KwIn{a sequence $A$, the left bound of sub-sequence $l$, and the right bound $r$}
+	\KwOut{an index $mid$ where the pivot is located}
+	\KwResult{elements in the sequence with indices $[l, mid - 1]$ are smaller than $A[q]$, and elements in the sequence with indices $[mid + 1, r]$ are larger than $A[q]$}
+	\label{algo:quicksort_partition}
+	\LinesNumbered
+	$pivot := A[r]$ \\
+	$i := p - 1$ \\
+	\For{$j= l: r - 1$}	{
+		\If{$A[j] \le pivot$}{
+			$i := i + 1$ \\
+			{\con swap($A[i]$, $A[j]$)} 
+		}
+	}
+	{\con swap($A[i+1], A[r]$)} \\
+	\Return{$i + 1$}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{The {\con quicksort} Function}
+	\KwIn{a sequence $A$, the left bound of sub-sequence $l$, and the right bound $r$}
+	\KwResult{elements in the sequence with indices $[l, r]$ are sorted (in-place)}
+	\label{algo:quicksort_original}
+	\LinesNumbered
+	\If{$l < r$}{
+		$pos :=$ {\con partition($A$, $l$, $r$)} \\
+		{\con quicksort($A$, $l$, $pos - 1$)} \\
+		{\con quicksort($A$, $pos + 1$, $r$)} 
+	}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Quicksort}
+	\KwIn{a sequence $A$}
+	\KwResult{a sorted sequence $A$ (in-place)}
+	\label{algo:quicksort_original_wrap}
+	\LinesNumbered
+	{\con quicksort($A$, 1, $\operatorname{len}(A)$)}
+\end{algorithm}
+
+\subsection{Analysis and Improvement}
+
+The most critical part in quicksort is the choice of pivot. A good pivot can greatly reduce the entropy, while a bad pivot can almost do nothing helpful.
+
+As pointed out in \cite{mackay1}, a bad pivot will make the partition unbalanced, and thus reduce the information gain in each iteration. So we can focus on how to find a good pivot. 
+
+One classical way to prevent a bad pivot selection is the three-median. We randomly choose three elements in the sequence, and choose the median as the pivot. We may generalize this approach by choosing more elements and find their median. 
+
+Another possible improvement is to try some heuristic method. For example, when the partition is going to be much too biased (we can set a threshold for this), we can choose a new pivot from the partitioned numbers. We can try some different thresholds and choose the best one.
+
+\section{Discussion}
+
+\subsection{General Definition of Sorting Algorithms Performance}
+
+The evaluation of an algorithm is mainly based on the following indicators:
+
+\begin{itemize}
+	\item Time complexity. The time complexity of the algorithm refers to the amount of computation required to execute the algorithm.
+	\item Spatial complexity. The spatial complexity of the algorithm refers to the memory space consumed by the algorithm. Compared with time complexity, the analysis of space complexity is much simpler.
+\end{itemize}
+
+It is worth noting that the same algorithm runs at different speeds in different compilation environments. Paul's \cite{paul1} experiment shows that although the time complexity of heapsort is greater than that of quicksort, heapsort maybe much faster than quicksort in some environment. Obviously, the original intention of the improvement is to get faster running speed under specific conditions. Therefore, in addition to analyzing the time complexity based on information entropy, paying attention to the actual running speed of the improved algorithm is also important.
+
+\subsection{Applicable Conditions and Stability}
+
+The percolating-down operation of original heapsort always wastes a lot of time if the number of data is very large. But the rearranged fast heapsort can solve this problem to a certain degree. According to the results, the rearranged fast heapsort has a short execution time than the others when the length of sequence is larger than 100000. But the simple fast heapsort does not show any advantage in execution time. So if the amount of data to be sorted is very large, the rearranged fast heapsort is a better choice.
+
+It can be seen from the graph that the rearranged fast heapsort has a smoother curve with little fluctuation. So it is clear that this new algorithm is more stable than the original one for different length sequences.
+
+\subsection{Advantages and Disadvantages}
+
+The theoretical lower limit of sorting algorithm is demonstrated from the knowledge of information theory. Taking information entropy as reference, an improved heapsort algorithm is designed, and achieve the expected outcome. A feasible reference idea is proposed for the improvement of the fast sorting algorithm.
+
+In the process of program testing, only a specific laptop is used, so the final results cannot represent the performance of the algorithm in general. For the improvement of quicksort algorithm, there is not enough time to propose a specific solution but only an idea.
+
+\section{Conclusion}
+
+We applied information theory to prove that sorting algorithm have a lower bound of time complexity: $\Omega(n\log n)$. And we discussed how heapsort and quicksort can be improved with information theory. Also, we did experiments and showed that improved version of heapsort is steadiest all the time, and fastest when $n$ is larger than $100000$.
+
+\bibliography{ref}
+
+\end{document}
